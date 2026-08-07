@@ -52,6 +52,7 @@ npm start
 - `TELEGRAM_BOT_TOKEN` — токен Telegram-бота от `@BotFather`
 - `SUPABASE_URL` — URL проекта Supabase
 - `SUPABASE_KEY` — ключ Supabase (anon или service key)
+- `SUPABASE_SERVICE_ROLE_KEY` — *(рекомендуется для продакшена на сервере)* service_role ключ Supabase для серверных операций (Row Level Security может блокировать вставки с publishable ключа)
 - `ENCRYPTION_SECRET` — секрет для шифрования токена Uzum
 - `DEFAULT_BRIEF_TIME` — время рассылки по умолчанию в формате `HH:MM`
 - `DEFAULT_MIN_STOCK_DAYS` — порог дней остатка для тревоги
