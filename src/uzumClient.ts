@@ -32,10 +32,11 @@ async function fetchWithRetry<T>(token: string, path: string, params?: Record<st
   while (attempt < maxAttempts) {
     attempt += 1;
     try {
+      const authHeader = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          Authorization: token,
+          Authorization: authHeader,
           'Content-Type': 'application/json',
         },
       });
