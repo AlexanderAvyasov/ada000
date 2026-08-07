@@ -1,5 +1,3 @@
-import { UzumClient } from './src/uzumClient.js';
-
 const token = process.env.UZUM_TOKEN;
 const shopId = Number(process.env.SHOP_ID);
 
@@ -9,23 +7,27 @@ if (!token || !shopId) {
   process.exit(1);
 }
 
-async function tryRequest(tokenToUse: string, label: string) {
+const BASE = 'https://api-seller.uzum.uz/api/seller-openapi';
+
+async function tryFetch(authValue: string, label: string) {
+  const url = `${BASE}/v1/product/shop/${shopId}?size=1`;
   try {
-    const client = new UzumClient(tokenToUse);
-    const res = await client.getShopProducts(shopId, { size: 1 });
-    console.log(`Success (${label}):`);
-    console.log(JSON.stringify(res, null, 2));
+    console.log(`Requesting ${url} with ${label} header`);
+    const res = await fetch(url, { method: 'GET', headers: { Authorization: authValue } });
+    const text = await res.text();
+    console.log(`${label} -> HTTP ${res.status}`);
+    try {
+      console.log(JSON.stringify(JSON.parse(text), null, 2));
+    } catch (_) {
+      console.log(text);
+    }
   } catch (err) {
-    console.error(`Error (${label}):`);
-    console.error(err instanceof Error ? err.message : JSON.stringify(err));
-    // If object-like error, show it for debugging (avoid leaking tokens)
-    if (err && typeof err === 'object') console.error(err);
+    console.error(`${label} -> fetch error:`, err instanceof Error ? err.message : String(err));
   }
 }
 
 (async () => {
-  console.log('Testing token as-is');
-  await tryRequest(token, 'raw');
-  console.log('\nTesting with Bearer prefix');
-  await tryRequest('Bearer ' + token, 'bearer');
+  await tryFetch(token, 'raw');
+  console.log('\n---\n');
+  await tryFetch('Bearer ' + token, 'bearer');
 })();

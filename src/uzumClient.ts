@@ -133,4 +133,8 @@ export class UzumClient {
       shopId,
     });
   }
+
+  async getShops() {
+    return fetchWithRetry<unknown[]>(this.token, '/v1/shops');
+  }
 }

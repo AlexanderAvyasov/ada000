@@ -89,3 +89,35 @@ npm start
 - выполнить SQL из `migrations.sql`
 - запустить `npm install` и `npm run dev`
 - на проде запускать `./start.sh`
+
+## Railway (Docker) — быстрое развёртывание
+
+Если вы хотите задеплоить приложение через Railway с использованием Dockerfile, выполните следующие шаги:
+
+1. Убедитесь, что в репозитории присутствуют `Dockerfile` и `.dockerignore` (созданы автоматически).
+2. Запушьте изменения в GitHub и подключите репозиторий к Railway (New Project → Deploy from GitHub).
+3. В настройках проекта Railway добавьте переменные окружения (Environment):
+	- `TELEGRAM_BOT_TOKEN`
+	- `SUPABASE_URL`
+	- `SUPABASE_KEY` (или `SUPABASE_SERVICE_ROLE_KEY` для серверных операций)
+	- `ENCRYPTION_SECRET`
+	- `DEFAULT_BRIEF_TIME` (например `09:00`)
+	- `DEFAULT_MIN_STOCK_DAYS`, `DEFAULT_ROI_THRESHOLD` и другие по необходимости
+4. Railway автоматически соберёт Docker-образ, используя `Dockerfile`. По умолчанию контейнер запускает
+	`node ./dist/index.js`. Railway не требует веб-порта для фоновых процессов, но если потребуется —
+	настройте `PORT` в переменных окружения и измените код/скрипт запуска.
+5. (Опция) Если собираетесь использовать GHCR/AWS Docker Registry: вы можете настроить workflow CI, который будет
+	билдить и пушить образ в registry, а Railway — тянуть образ оттуда.
+
+Совет по безопасности: обязательно добавьте `SUPABASE_SERVICE_ROLE_KEY` только в секцию секретов Railway и не коммитьте
+ключи в репозиторий. При смене токенов Uzum — отозовите старые и замените в Railway Secrets.
+
+Примеры команд для локальной проверки образа:
+
+```bash
+# собирать docker-образ локально
+docker build -t sellerpilot:latest .
+# запуск контейнера
+docker run --env-file .env -it sellerpilot:latest
+```
+
